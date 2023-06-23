@@ -1,20 +1,21 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, URLField
+from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Length, Optional
 
 
-class OpinionForm(FlaskForm):
-    title = StringField(
-        'Введите название фильма',
-        validators=[DataRequired(message='Обязательное поле'),
-                    Length(1, 128)]
+class UrlForm(FlaskForm):
+    original_link = StringField(
+        'Длинная ссылка',
+        validators=[
+            DataRequired(message='Обязательное поле'),
+            Length(1, 256)
+        ]
     )
-    text = TextAreaField(
-        'Напишите мнение', 
-        validators=[DataRequired(message='Обязательное поле')]
+    custom_id = StringField(
+        'Ваш вариант короткой ссылки',
+        validators=[
+            Length(1, 16),
+            Optional()
+        ]
     )
-    source = URLField(
-        'Добавьте ссылку на подробный обзор фильма',
-        validators=[Length(1, 256), Optional()]
-    )
-    submit = SubmitField('Добавить') 
+    submit = SubmitField('Создать')

@@ -1,22 +1,34 @@
-from flask import jsonify
+from http import HTTPStatus
 
-from . import app
+from flask import jsonify, request
+import pyshorteners
+
+from . import app, db
+from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 
 
-def opinion_to_dict(opinion):
-    return dict(
-        id = opinion.id,
-        original = opinion.original,
-        short = opinion.short,
-        timestamp = opinion.timestamp,
-    )
-
-
-@app.route('/api/id/', methods=['POST'])  
+@app.route('/api/id/', methods=('POST',))
 def get_unique_short_id():
-    opinion = URLMap.query.get_or_404(id)
-    data = opinion_to_dict(opinion)  
-    return jsonify(
-        {'opinion': data}
-    ), 200
+    urls = URLMap()
+    data = request.get_json()
+    if not data:
+        raise InvalidAPIUsage('Отсутствует тело запроса')
+    original_url = data.get('original', 'Ошибка')
+    short_url = pyshorteners.Shortener().tinyurl.short(original_url)
+    db.session.add(
+        URLMap(
+            original=original_url,
+            short=short_url,
+        )
+    )
+    db.session.commit()
+    return jsonify({'urls': urls.to_dict()}), HTTPStatus.CREATED
+
+
+@app.route('/api/id/<string:short_id>/', methods=('GET',))
+def get_short_url(short_id):
+    short_map = URLMap.query.filter_by(short=short_id).first()
+    if short_map is not None:
+        return jsonify({'url': short_map.original}), HTTPStatus.OK
+    raise InvalidAPIUsage('Такого нет', HTTPStatus.NOT_FOUND)

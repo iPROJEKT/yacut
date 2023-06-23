@@ -5,7 +5,8 @@ from settings import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
-db = SQLAlchemy(app)
+db = SQLAlchemy(app, session_options={"expire_on_commit": False})
 migrate = Migrate(app, db)
 
-from . import views 
+
+from . import views, models, api_views, error_handlers, forms
