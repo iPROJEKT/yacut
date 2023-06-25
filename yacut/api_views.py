@@ -1,29 +1,25 @@
 from http import HTTPStatus
 
 from flask import jsonify, request
-import pyshorteners
 
 from . import app, db
 from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 
-
 @app.route('/api/id/', methods=('POST',))
 def get_unique_short_id():
-    urls = URLMap()
+    url = URLMap()
     data = request.get_json()
     if not data:
         raise InvalidAPIUsage('Отсутствует тело запроса')
     original_url = data.get('original', 'Ошибка')
-    short_url = pyshorteners.Shortener().tinyurl.short(original_url)
-    db.session.add(
-        URLMap(
-            original=original_url,
-            short=short_url,
-        )
+    op = URLMap(
+        original=original_url,
+        short=url.get_unic_short_link(original_url),
     )
+    db.session.add(op)
     db.session.commit()
-    return jsonify({'urls': urls.to_dict()}), HTTPStatus.CREATED
+    return jsonify({'urls': op.to_dict()}), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<string:short_id>/', methods=('GET',))
