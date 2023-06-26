@@ -1,4 +1,5 @@
 from http import HTTPStatus
+import re
 
 from flask import jsonify, request
 
@@ -12,6 +13,12 @@ def get_unique_short_id():
     data = request.get_json()
     if not data:
         raise InvalidAPIUsage('Отсутствует тело запроса')
+    if 'url' not in data:
+        raise InvalidAPIUsage('\"url\" является обязательным полем!')
+    if 'short_link' in data:
+        short_id = data.get('short_link')
+        if URLMap.query.filter_by(short=short_id).first():
+            raise InvalidAPIUsage(f'Имя "{short_id}" уже занято.')
     original_url = data.get('original', 'Ошибка')
     op = URLMap(
         original=original_url,
@@ -20,6 +27,7 @@ def get_unique_short_id():
     db.session.add(op)
     db.session.commit()
     return jsonify({'urls': op.to_dict()}), HTTPStatus.CREATED
+
 
 
 @app.route('/api/id/<string:short_id>/', methods=('GET',))
