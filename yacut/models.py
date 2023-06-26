@@ -37,7 +37,7 @@ class URLMap(db.Model):
     def get_unic_short_link(self, original_url):
         short_id = pyshorteners.Shortener().tinyurl.short(original_url)
         if URLMap.query.filter_by(short=short_id).first():
-            raise InvalidAPIUsage('Уже занято', HTTPStatus.BAD_REQUEST)
+            raise InvalidAPIUsage(f'Имя {short_id} уже занято.', HTTPStatus.BAD_REQUEST)
         if not URLMap.valid_short_url(self, short_id):
             raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки', HTTPStatus.BAD_REQUEST)
         return f'http://localhost/{short_id}', HTTPStatus.CREATED

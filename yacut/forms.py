@@ -7,7 +7,7 @@ class UrlForm(FlaskForm):
     original_link = StringField(
         'Длинная ссылка',
         validators=[
-            DataRequired(message='Обязательное поле'),
+            DataRequired(message='url является обязательным полем!'),
             Length(1, 256)
         ]
     )
