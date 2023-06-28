@@ -23,7 +23,7 @@ def check_short_id_on_unic(short_link):
 
 
 def get_unique_short_id():
-    short_link = ''.join(random.choice(ascii_letters + digits) for i in range(6))
+    short_link = ''.join(random.choice(ascii_letters + digits) for _ in range(6))
     if check_short_id_on_unic(short_link) == False:
         return get_unique_short_id()
     return short_link
@@ -33,23 +33,29 @@ def get_unique_short_id():
 def get_unique_short():
     url = URLMap()
     data = request.get_json()
-    or_url = data.get('url')
-    if ('url'not in data) or (or_url == ''):
+    if not data:
         raise InvalidAPIUsage('Отсутствует тело запроса')
-    if 'url' not in data:
+    op = data.get('url')
+    if 'url' not in data or op == '':
         raise InvalidAPIUsage('\"url\" является обязательным полем!')
     if 'short_link' in data:
         short_link = data.get('short_link')
         if check_short_id_on_unic(short_link) == False:
             raise InvalidAPIUsage(f'Имя "{short_link}" уже занято.')
         if chek_on_sumvols(short_link) == False:
-            raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
-    db.session.add(
-        URLMap(
-            original=data.get('url'),
+            raise InvalidAPIUsage(f'Указано недопустимое имя для короткой ссылки')
+        if short_link == '' or short_link is None:
+            w_l = URLMap(
+                original=op,
+                short=short_link
+            )
+            db.session.add(w_l)
+    else:
+        n_l = URLMap(
+            original=op,
             short=get_unique_short_id()
         )
-    )
+        db.session.add(n_l)
     db.session.commit()
     return jsonify(url.to_dict()), HTTPStatus.CREATED
 
