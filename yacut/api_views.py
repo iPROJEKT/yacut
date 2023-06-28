@@ -19,11 +19,9 @@ def check_short_id_on_unic(custom_id):
 
 
 def get_unique_short_id():
-    custom_id = ''
-    for _ in range(6):
-        custom_id.join(random.choice(ascii_letters + digits))
-    if check_short_id_on_unic(custom_id):
-        return get_unique_short_id
+    custom_id = ''.join(random.choice(ascii_letters + digits) for i in range(6))
+    if check_short_id_on_unic(custom_id) == False:
+        return get_unique_short_id()
     return custom_id
 
 
@@ -38,7 +36,7 @@ def get_unique_short():
     original_url = data.get('url')
     if 'short_link' in data:
         short_link = data.get('short_link`')
-        if not check_short_id_on_unic(short_link):
+        if check_short_id_on_unic(short_link) == False:
             raise InvalidAPIUsage(f'Имя "{short_link}" уже занято.')
         if short_link == '' or short_link is None:
             with_sh_l = URLMap(

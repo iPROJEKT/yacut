@@ -18,7 +18,7 @@ class UrlForm(FlaskForm):
             Length(1, 16),
             Regexp(
                 regex=r'^[a-zA-Z\d]{1,16}$',
-                message='Допустимы только цифры и буквы "a-Z"'
+                message='Допустимы только цифры и буквы "a-Z 0-9"'
             )
         ]
     )
