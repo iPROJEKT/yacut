@@ -10,45 +10,46 @@ from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 
 
-def check_short_id_on_unic(custom_id):
-    if URLMap.query.filter_by(short=custom_id).first():
+def chek_on_sumvols(short_link):
+    if re.match(r'^[a-zA-Z\d]{1,16}$', short_link) is None:
         return False
-    if re.match(r'^[a-zA-Z\d]{1,16}$', custom_id) is None:
-        raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
+    return True
+
+
+def check_short_id_on_unic(short_link):
+    if URLMap.query.filter_by(short=short_link).first():
+        return False
     return True
 
 
 def get_unique_short_id():
-    custom_id = ''.join(random.choice(ascii_letters + digits) for i in range(6))
-    if check_short_id_on_unic(custom_id) == False:
+    short_link = ''.join(random.choice(ascii_letters + digits) for i in range(6))
+    if check_short_id_on_unic(short_link) == False:
         return get_unique_short_id()
-    return custom_id
+    return short_link
 
 
 @app.route('/api/id/', methods=('POST',))
 def get_unique_short():
     url = URLMap()
     data = request.get_json()
-    if not data:
+    or_url = data.get('url')
+    if ('url'not in data) or (or_url == ''):
         raise InvalidAPIUsage('Отсутствует тело запроса')
     if 'url' not in data:
         raise InvalidAPIUsage('\"url\" является обязательным полем!')
-    original_url = data.get('url')
     if 'short_link' in data:
-        short_link = data.get('short_link`')
+        short_link = data.get('short_link')
         if check_short_id_on_unic(short_link) == False:
             raise InvalidAPIUsage(f'Имя "{short_link}" уже занято.')
-        if short_link == '' or short_link is None:
-            with_sh_l = URLMap(
-                original=original_url,
-                short=short_link,
-            )
-            db.session.add(with_sh_l)
-    not_sh_l = URLMap(
-        original=original_url,
-        short=get_unique_short_id(),
+        if chek_on_sumvols(short_link) == False:
+            raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
+    db.session.add(
+        URLMap(
+            original=data.get('url'),
+            short=get_unique_short_id()
+        )
     )
-    db.session.add(not_sh_l)
     db.session.commit()
     return jsonify(url.to_dict()), HTTPStatus.CREATED
 
