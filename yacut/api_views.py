@@ -6,6 +6,7 @@ from flask import jsonify, request
 from . import app, db
 from .error_handlers import InvalidAPIUsage
 from .models import URLMap
+from .const import EMPTY_BODY_MASSEGE, URL_IS_NECESSARILY_MESSAGE, NOT_CORREKR_BODY_MESSAGE, PATTERN
 
 
 @app.route('/api/id/', methods=['POST'])
@@ -13,17 +14,17 @@ def create_short_link():
     url = URLMap()
     data = request.get_json()
     if not data:
-        raise InvalidAPIUsage('Отсутствует тело запроса')
+        raise InvalidAPIUsage(EMPTY_BODY_MASSEGE)
     if 'url' not in data:
-        raise InvalidAPIUsage('\"url\" является обязательным полем!')
+        raise InvalidAPIUsage(URL_IS_NECESSARILY_MESSAGE)
     if 'custom_id' in data:
         custom_id = data.get('custom_id')
         if not url.check_short_id_on_unic(custom_id):
             raise InvalidAPIUsage(f'Имя "{custom_id}" уже занято.')
         if custom_id == '' or custom_id is None:
             data['custom_id'] = url.get_unique_short_id()
-        elif not re.match(r'^[a-zA-Z\d]{1,16}$', custom_id):
-            raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
+        elif not re.match(PATTERN, custom_id):
+            raise InvalidAPIUsage(NOT_CORREKR_BODY_MESSAGE)
     else:
         data['custom_id'] = url.get_unique_short_id()
     url.from_dict(data)

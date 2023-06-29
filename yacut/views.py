@@ -1,10 +1,9 @@
-from http import HTTPStatus
-
 from flask import render_template, flash, redirect
 
 from yacut import app, db
 from .forms import UrlForm
 from .models import URLMap
+from .const import NOT_CORREKR_BODY_MESSAGE
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -20,7 +19,7 @@ def index_view():
         flash(f'Имя {short_link} уже занято!', 'link-taken')
         return render_template('urls.html', form=form)
     if not url.chek_on_sumvols(short_link):
-        flash('Указано недопустимое имя для короткой ссылки', 'link-taken')
+        flash(NOT_CORREKR_BODY_MESSAGE, 'link-taken')
         return render_template('urls.html', form=form)
     new_url = URLMap(
         original=form.original_link.data,

@@ -5,6 +5,7 @@ import re
 
 from flask import url_for
 
+from .const import PATTERN
 from . import db
 
 
@@ -26,7 +27,7 @@ class URLMap(db.Model):
         )
 
     def chek_on_sumvols(self, short_link):
-        if re.match(r'^[a-zA-Z\d]{1,16}$', short_link) is None:
+        if re.match(PATTERN, short_link) is None:
             return False
         return True
 
@@ -37,6 +38,6 @@ class URLMap(db.Model):
 
     def get_unique_short_id(self):
         short_link = ''.join(random.choice(ascii_letters + digits) for _ in range(6))
-        if self.check_short_id_on_unic(short_link) == False:
+        if not self.check_short_id_on_unic(short_link):
             return self.get_unique_short_id()
         return short_link
