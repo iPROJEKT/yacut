@@ -36,7 +36,7 @@ class URLMap(db.Model):
     def get_unique_short_id(self):
         short_link = ''.join(random.choice(PATTERN_FOR_GEN_URK) for _ in range(6))
         if not self.check_short_id_on_unic(short_link):
-            raise InvalidAPIUsage('Число подменных url достигла максимума')
+            raise InvalidAPIUsage('Число подменных url достигла ')
         return short_link
 
     def from_dict(self, data):
