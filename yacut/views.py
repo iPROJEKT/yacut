@@ -32,6 +32,6 @@ def index_view():
 
 @app.route('/<short_id>')
 def follow_link(short_id):
-    db_object = URLMap.query.filter_by(short=short_id).first_or_404()
+    db_object = URLMap.get_or_404(short_id)
     original_link = db_object.original
     return redirect(original_link)

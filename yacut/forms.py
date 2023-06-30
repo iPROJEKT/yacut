@@ -2,6 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, URLField
 from wtforms.validators import URL, DataRequired, Length, Optional, Regexp
 
+from .const import MAX_LEGHT, MIN_LEGHT, PATTERN
+
 
 class UrlForm(FlaskForm):
     original_link = URLField(
@@ -15,9 +17,9 @@ class UrlForm(FlaskForm):
         'Ваш вариант короткой ссылки',
         validators=[
             Optional(),
-            Length(1, 16),
+            Length(MIN_LEGHT, MAX_LEGHT),
             Regexp(
-                regex=r'^[a-zA-Z\d]{1,16}$',
+                regex=PATTERN,
                 message='Допустимы только цифры и буквы "a-Z 0-9"'
             )
         ]
