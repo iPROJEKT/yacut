@@ -23,12 +23,14 @@ class URLMap(db.Model):
     def get_or_404(filter_by_obj):
         return URLMap.query.filter_by(short=filter_by_obj).first_or_404()
 
-    def chek_on_sumvols(self, short_link):
+    @staticmethod
+    def chek_on_sumvols(short_link):
         if re.match(PATTERN, short_link) is None:
             return False
         return True
 
-    def check_short_id_on_unic(self, short_link):
+    @staticmethod
+    def check_short_id_on_unic(short_link):
         if URLMap.query.filter_by(short=short_link).first():
             return False
         return True

@@ -29,6 +29,7 @@ def create_short_link():
         data['custom_id'] = url.get_unique_short_id()
     url.from_dict(data)
     db.session.add(url)
+    # я не разобрался с save и classmetod в from_dict
     db.session.commit()
     return jsonify(url.to_dict()), HTTPStatus.CREATED
 
