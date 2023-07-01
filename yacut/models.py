@@ -5,7 +5,7 @@ import re
 from flask import url_for
 
 from .error_handlers import InvalidAPIUsage
-from .const import PATTERN, PATTERN_FOR_GEN_URK
+from .const import PATTERN, PATTERN_FOR_GEN_URK, DICT_LABELS
 from . import db
 
 
@@ -23,14 +23,12 @@ class URLMap(db.Model):
     def get_or_404(filter_by_obj):
         return URLMap.query.filter_by(short=filter_by_obj).first_or_404()
 
-    @staticmethod
-    def chek_on_sumvols(short_link):
+    def chek_on_sumvols(self, short_link):
         if re.match(PATTERN, short_link) is None:
             return False
         return True
 
-    @staticmethod
-    def check_short_id_on_unic(short_link):
+    def check_short_id_on_unic(self, short_link):
         if URLMap.query.filter_by(short=short_link).first():
             return False
         return True
@@ -41,10 +39,13 @@ class URLMap(db.Model):
             raise InvalidAPIUsage('Число подменных url достигла ')
         return short_link
 
-    def from_dict(self, data):
-        for field_db, field_inp in {'original': 'url', 'short': 'custom_id'}.items():
+    @staticmethod
+    def from_dict(data):
+        instance = URLMap()
+        for field_db, field_inp in DICT_LABELS.items():
             if field_inp in data:
-                setattr(self, field_db, data[field_inp])
+                setattr(instance, field_db, data[field_inp])
+        return instance
 
     def to_dict(self):
         return dict(

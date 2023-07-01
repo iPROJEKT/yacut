@@ -11,8 +11,8 @@ from .const import EMPTY_BODY_MASSEGE, URL_IS_NECESSARILY_MESSAGE, NOT_CORREKR_B
 
 @app.route('/api/id/', methods=['POST'])
 def create_short_link():
-    url = URLMap()
     data = request.get_json()
+    url = URLMap()
     if not data:
         raise InvalidAPIUsage(EMPTY_BODY_MASSEGE)
     if 'url' not in data:
@@ -27,11 +27,12 @@ def create_short_link():
             raise InvalidAPIUsage(NOT_CORREKR_BODY_MESSAGE)
     else:
         data['custom_id'] = url.get_unique_short_id()
-    url.from_dict(data)
-    db.session.add(url)
-    # я не разобрался с save и classmetod в from_dict, можете помочб разобраться?
+    urlmap = URLMap.from_dict(data)
+    db.session.add(urlmap)
+    # я не разобрался с save можете помочб разобраться?
+    # не понял что именно он должен делать, рпаспишите по подробнее
     db.session.commit()
-    return jsonify(url.to_dict()), HTTPStatus.CREATED
+    return jsonify(urlmap.to_dict()), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<string:short_id>/', methods=('GET',))
