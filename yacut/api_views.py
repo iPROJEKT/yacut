@@ -1,5 +1,4 @@
 from http import HTTPStatus
-import re
 
 from flask import jsonify, request
 
@@ -8,11 +7,6 @@ from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 from .const import (
     EMPTY_BODY_MASSEGE,
-    URL_IS_NECESSARILY_MESSAGE,
-    NOT_CORREKR_BODY_MESSAGE,
-    PATTERN,
-    NAME_TAKEN_MASSEGE_FIRST_PATH,
-    NAME_TAKEN_MASSEGE_SECOND_PATH
 )
 
 
