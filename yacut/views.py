@@ -15,7 +15,7 @@ def index_view():
     short_link = form.custom_id.data
     if not short_link:
         short_link = url.get_unique_short_id()
-    if not url.check_short_id_on_unic(short_link):
+    if not url.check_short_id_on_unique(short_link):
         flash(f'Имя {short_link} уже занято!', 'link-taken')
         return render_template('urls.html', form=form)
     if not url.character_check(short_link):
