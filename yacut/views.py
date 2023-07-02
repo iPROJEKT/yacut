@@ -18,7 +18,7 @@ def index_view():
     if not url.check_short_id_on_unic(short_link):
         flash(f'Имя {short_link} уже занято!', 'link-taken')
         return render_template('urls.html', form=form)
-    if not url.chek_on_sumvols(short_link):
+    if not url.character_check(short_link):
         flash(NOT_CORREKR_BODY_MESSAGE, 'link-taken')
         return render_template('urls.html', form=form)
     new_url = URLMap(
