@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from flask import jsonify, request
 
-from . import app, db
+from . import app
 from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 from .const import (
@@ -12,13 +12,12 @@ from .const import (
 
 @app.route('/api/id/', methods=['POST'])
 def create_short_link():
+    url = URLMap()
     data = request.get_json()
     if type(data) != dict:
         raise InvalidAPIUsage(EMPTY_BODY_MASSEGE)
-    URLMap.save(data)
+    url.save(data)
     urlmap = URLMap.from_dict(data)
-    db.session.add(urlmap)
-    db.session.commit()
     return jsonify(urlmap.to_dict()), HTTPStatus.CREATED
 
 
