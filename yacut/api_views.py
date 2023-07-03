@@ -7,6 +7,7 @@ from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 from .const import (
     EMPTY_BODY_MASSEGE,
+    URL_IS_NECESSARILY_MESSAGE
 )
 
 
@@ -16,6 +17,8 @@ def create_short_link():
     data = request.get_json()
     if type(data) != dict:
         raise InvalidAPIUsage(EMPTY_BODY_MASSEGE)
+    if 'url' not in data:
+        raise InvalidAPIUsage(URL_IS_NECESSARILY_MESSAGE)
     url.save(data)
     return jsonify(url.from_dict(data).to_dict()), HTTPStatus.CREATED
 

@@ -65,8 +65,6 @@ class URLMap(db.Model):
         )
 
     def save(self, data):
-        if 'url' not in data:
-            raise InvalidAPIUsage(URL_IS_NECESSARILY_MESSAGE)
         if 'custom_id' in data:
             custom_id = data.get('custom_id')
             if not self.check_short_id_on_unique(custom_id):
@@ -77,6 +75,5 @@ class URLMap(db.Model):
                 raise InvalidAPIUsage(NOT_CORREKR_BODY_MESSAGE)
         else:
             data['custom_id'] = self.get_unique_short_id()
-        urlmap = URLMap.from_dict(data)
-        db.session.add(urlmap)
+        db.session.add(URLMap.from_dict(data))
         db.session.commit()
