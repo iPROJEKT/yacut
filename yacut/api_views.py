@@ -17,8 +17,7 @@ def create_short_link():
     if type(data) != dict:
         raise InvalidAPIUsage(EMPTY_BODY_MASSEGE)
     url.save(data)
-    urlmap = URLMap.from_dict(data)
-    return jsonify(urlmap.to_dict()), HTTPStatus.CREATED
+    return jsonify(url.from_dict(data).to_dict()), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<string:short_id>/', methods=('GET',))
