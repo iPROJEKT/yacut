@@ -13,14 +13,14 @@ from .const import (
 
 @app.route('/api/id/', methods=['POST'])
 def create_short_link():
-    url = URLMap()
     data = request.get_json()
     if type(data) != dict:
         raise InvalidAPIUsage(EMPTY_BODY_MASSEGE)
     if 'url' not in data:
         raise InvalidAPIUsage(URL_IS_NECESSARILY_MESSAGE)
-    url.save(data)
-    return jsonify(url.from_dict(data).to_dict()), HTTPStatus.CREATED
+    url_map = URLMap.from_dict(data)
+    url_map.save()
+    return jsonify(url_map.to_dict()), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<string:short_id>/', methods=('GET',))

@@ -52,6 +52,16 @@ class URLMap(db.Model):
     @staticmethod
     def from_dict(data):
         instance = URLMap()
+        if 'custom_id' in data:
+            custom_id = data.get('custom_id')
+            if not URLMap.check_short_id_on_unique(custom_id):
+                raise InvalidAPIUsage(f'{NAME_TAKEN_MASSEGE_FIRST_PATH}"{custom_id}"{NAME_TAKEN_MASSEGE_SECOND_PATH}')
+            if custom_id == '' or custom_id is None:
+                data['custom_id'] = URLMap.get_unique_short_id()
+            elif not re.match(PATTERN, custom_id):
+                raise InvalidAPIUsage(NOT_CORREKR_BODY_MESSAGE)
+        else:
+            data['custom_id'] = URLMap.get_unique_short_id()
         for field_db, field_inp in DICT_LABELS.items():
             if field_inp in data:
                 setattr(instance, field_db, data[field_inp])
@@ -63,16 +73,6 @@ class URLMap(db.Model):
             short_link=url_for('index_view', _external=True) + self.short
         )
 
-    def save(self, data):
-        if 'custom_id' in data:
-            custom_id = data.get('custom_id')
-            if not self.check_short_id_on_unique(custom_id):
-                raise InvalidAPIUsage(f'{NAME_TAKEN_MASSEGE_FIRST_PATH}"{custom_id}"{NAME_TAKEN_MASSEGE_SECOND_PATH}')
-            if custom_id == '' or custom_id is None:
-                data['custom_id'] = self.get_unique_short_id()
-            elif not re.match(PATTERN, custom_id):
-                raise InvalidAPIUsage(NOT_CORREKR_BODY_MESSAGE)
-        else:
-            data['custom_id'] = self.get_unique_short_id()
-        db.session.add(URLMap.from_dict(data))
+    def save(self):
+        db.session.add(self)
         db.session.commit()
