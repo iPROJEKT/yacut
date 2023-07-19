@@ -24,4 +24,4 @@
 Пример python main.py whats-new -o file
 
 
-python + beautifulsoup4 + prettytable + argparse
+### python + beautifulsoup4 + prettytable + argparse
